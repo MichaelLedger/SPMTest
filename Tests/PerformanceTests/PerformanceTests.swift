@@ -15,6 +15,8 @@ struct Test {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
         print("\(#function)")
         Performance().startMonitor()
+//        let model = OCModel()
+//        print("\(model.age)")
         XCTAssert(true, "Pass");
     }
 

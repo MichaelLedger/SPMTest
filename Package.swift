@@ -1,5 +1,9 @@
 // swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
+/*
+ x-xcode-log://B1630E03-1A90-4B16-AD71-29723E4F88C5 ignoring broken symlink /Users/gavinxiang/Downloads/SPMTest/Performance/Sources/include/OCModel.h
+ x-xcode-log://B1630E03-1A90-4B16-AD71-29723E4F88C5 target at '/Users/gavinxiang/Downloads/SPMTest/Performance/Sources' contains mixed language source files; feature not supported
+ */
 
 import PackageDescription
 
@@ -13,10 +17,12 @@ let package = Package(
         .library(
             name: "Performance",
             targets: ["Performance"]
-        )
+        ),
+        .library(name: "SPMTest", targets: ["SPMTest"])
     ],
     dependencies: [],
     targets: [
+        // Objective-C Library
         .target(
             name: "MJRefresh",
             dependencies: [],
@@ -30,12 +36,22 @@ let package = Package(
             ]
         ),
         .testTarget(name: "MJRefreshExampleTests", dependencies: ["MJRefresh"], path: "Examples/MJRefreshExample/MJRefreshExampleTests"),
+        // Swift Library
         .target(
             name: "Performance",
-            path: "Sources",
+            dependencies: [],
+            path: "Performance/Sources",
+            exclude: ["Performance/Objective-C", "include"],
             resources: [.copy("Resources/PrivacyInfo.xcprivacy")]
+//            publicHeadersPath: "Performance/Sources/include",
+//            cSettings: [
+//                .headerSearchPath(".")
+//            ]
         ),
-        .testTarget(name: "PerformanceTests", dependencies: ["Performance"])
+        .testTarget(name: "PerformanceTests", dependencies: ["Performance"]),
+        // Mixed Swift and Objective-C Libraries
+        .target(name: "SPMTest", dependencies: ["MJRefresh", "Performance"], path: "SPMTest"),
+        .testTarget(name: "SPMTests", dependencies: ["SPMTest"])
     ],
     swiftLanguageVersions: [.v5]
 )
