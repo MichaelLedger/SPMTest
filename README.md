@@ -28,6 +28,7 @@ This plugin will auto add swift packages to `Pods.xcodeproj` for spm_pkg in `Pod
 **NOTE: you may manully add the same swift package in your main project if this package is used in main project.**
  
 // Gemfile
+
 `gem "cocoapods-spm", '~>0.1.9'`
 
 Run `bundle install`
@@ -43,7 +44,13 @@ Run `bundle install`
   :url => "git@github.com:SDWebImage/SDWebImageWebPCoder.git",
   :version => "0.14.6",
   :products => ["SDWebImageWebPCoder-SPM"]
+  
+  pod 'XXXKit1', :git => "git@github.com:organization/XXXKit1.git", :branch => "Feature-SPM-001"
+  pod 'XXXKit2', '~> 8.22.0'
+  pod 'XXXKit3', :path => '../../XXXKit3'
 ```
+
+Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage`.
 
 ## [Using a post_install script to add SPM reps to cocoa pods targets to resolve no such module issues](https://github.com/CocoaPods/CocoaPods/issues/10049#issuecomment-819480131)
 ```
@@ -70,7 +77,7 @@ Run `bundle install`
   
   # add spm to pod targets
   def add_spms_to_targets(installer)
-    target_names = ["PRTAddressKit", "PRTSelectPhoto", "PRTResultIndicator"]
+    target_names = ["XXXKit1", "XXXKit2", "XXXKit3"]
     spm_spec = {
       url: "git@github.com:SDWebImage/SDWebImage.git",
       requirement: {
