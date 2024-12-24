@@ -116,7 +116,10 @@ Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage` & `YYYKit1`,`YYYKit
 
 ```
 
-Run before build project
+Run before build project:
+
+**NOTE: Before running `pod install`, keep main project opened by Xcode, causing package dependencies loaded from cache or remote.**
+
 `bundle exec pod install --no-repo-update --verbose`
 
 ## Remaining issues
