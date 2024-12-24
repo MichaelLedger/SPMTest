@@ -50,7 +50,7 @@ Run `bundle install`
   pod 'XXXKit3', :path => '../../XXXKit3'
 ```
 
-Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage`.
+Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage` & `YYYKit1`,`YYYKit2` depends on `SnapKit`.
 
 ## [Using a post_install script to add SPM reps to cocoa pods targets to resolve no such module issues](https://github.com/CocoaPods/CocoaPods/issues/10049#issuecomment-819480131)
 ```
@@ -62,14 +62,20 @@ Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage`.
   def add_spm_to_target(project, target_name, url, requirement, product_name)
     project.targets.each do |target|
       if target.name == target_name
-        pkg = project.new(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference)
-        pkg.repositoryURL = url
-        pkg.requirement = requirement
+        pkg = project.root_object.package_references.find { |pkg| pkg.repositoryURL == url }
+        if pkg.nil?
+          pkg = project.new(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference)
+          pkg.repositoryURL = url
+          pkg.requirement = requirement
+          project.root_object.package_references << pkg
+          puts "=====new swift package reference==#{pkg.repositoryURL}"
+        else
+          puts "=====matched swift package reference==#{pkg.repositoryURL}"
+        end
         ref = project.new(Xcodeproj::Project::Object::XCSwiftPackageProductDependency)
         ref.package = pkg
         ref.product_name = product_name
         target.package_product_dependencies << ref
-        project.root_object.package_references << pkg
       end
     end
     project.save
@@ -77,26 +83,42 @@ Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage`.
   
   # add spm to pod targets
   def add_spms_to_targets(installer)
-    target_names = ["XXXKit1", "XXXKit2", "XXXKit3"]
-    spm_spec = {
+    spm_specs = [{
       url: "git@github.com:SDWebImage/SDWebImage.git",
       requirement: {
         kind: "upToNextMajorVersion",
         minimumVersion: "5.20.0"
       },
-      product_name: "SDWebImage"
-    }
-    target_names.each do |target_name|
-      puts "=====add_spm_to_target==#{target_name}"
-      add_spm_to_target(installer.pods_project,
-                        target_name,
-                        spm_spec[:url],
-                        spm_spec[:requirement],
-                        spm_spec[:product_name]
-                        )
+      product_name: "SDWebImage",
+      targets: ["XXXKit1", "XXXKit2", "XXXKit2"]
+    },{
+      url: "git@github.com:SnapKit/SnapKit.git",
+      requirement: {
+        kind: "upToNextMajorVersion",
+        minimumVersion: "5.0.1"
+      },
+      product_name: "SnapKit",
+      targets: ["YYYKit1", "YYYKit2"]
+    }]
+    spm_specs.each do | spm_spec |
+      spm_spec[:targets].each do |target_name|
+        puts "=====add_spm==#{spm_spec[:product_name]}==to_target==#{target_name}"
+        add_spm_to_target(installer.pods_project,
+                          target_name,
+                          spm_spec[:url],
+                          spm_spec[:requirement],
+                          spm_spec[:product_name])
+      end
     end
   end
+
 ```
 
 Run before build project
 `bundle exec pod install --no-repo-update --verbose`
+
+## Remaining issues
+
+[cocoapods-spm](https://github.com/trinhngocthuyen/cocoapods-spm) hook after `running post integrate hooks`, so there may exists two same spm depencies in `Pods.xcodeproj`.
+
+App extension & main project should **manully** add spm depencies & add spm library/framework in `Link Binary With Libraries` to avoid `no such module` issue.
