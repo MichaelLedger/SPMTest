@@ -82,11 +82,12 @@ Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage` & `YYYKit1`,`YYYKit
   end
   
   # add spm to pod targets
+  # spm dependency rules: (upToNextMajorVersion/ upToNextMinorVersion / exactVersion / versionRange)
   def add_spms_to_targets(installer)
     spm_specs = [{
       url: "git@github.com:SDWebImage/SDWebImage.git",
       requirement: {
-        kind: "upToNextMajorVersion",
+        kind: "exactVersion",
         minimumVersion: "5.20.0"
       },
       product_name: "SDWebImage",
@@ -94,7 +95,7 @@ Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage` & `YYYKit1`,`YYYKit
     },{
       url: "git@github.com:SnapKit/SnapKit.git",
       requirement: {
-        kind: "upToNextMajorVersion",
+        kind: "exactVersion",
         minimumVersion: "5.0.1"
       },
       product_name: "SnapKit",
