@@ -122,6 +122,10 @@ Run before build project:
 
 `bundle exec pod install --no-repo-update --verbose`
 
+##  Build service could not create build operation: unknown error while handling message: MsgHandlingError(message: "unable to initiate PIF transfer session (operation in progress?)")
+
+relaunch Xcode to refetch the remote package dependencies.
+
 ## Remaining issues
 
 [cocoapods-spm](https://github.com/trinhngocthuyen/cocoapods-spm) hook after `running post integrate hooks`, so there may exists two same spm depencies in `Pods.xcodeproj`.
