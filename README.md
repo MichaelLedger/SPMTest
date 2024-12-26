@@ -126,8 +126,53 @@ Run before build project:
 
 relaunch Xcode to refetch the remote package dependencies.
 
+## Using Forward Declarations to resolve circular-import-error: Module 'BraintreeCore' not found
+
+If spm module is not found, first check `Link Binary With Libraries`; then if import codes exists in C Header, there must exists circular import error.
+
+Causing by specific Objective-C header imported spm swift module && Bridging Header imported this specific Objective-C header.
+
+This problem has been bothering me all day to location. 
+
+(reset package dependency -> relink library -> check framework/header search paths -> test Demo from braintree -> check target build phases shells)
+
+Resolution: [Include Swift Classes in Objective-C Headers Using Forward Declarations](https://developer.apple.com/documentation/swift/importing-swift-into-objective-c)
+
+```
+//@import BraintreeCore;
+//@import BraintreeLocalPayment;
+//@import BraintreeSEPADirectDebit;
+//@import BraintreeCard;
+//@import BraintreeApplePay;
+//@import BraintreePayPal;
+
+@protocol BTLocalPaymentRequestDelegate, BTThreeDSecureRequestDelegate;
+@class BTLocalPaymentRequest, BTSEPADirectDebitRequest, BTAPIClient, BTSEPADirectDebitClient, BTLocalPaymentClient, BTPayPalClient, BTThreeDSecureClient;
+```
+
 ## Remaining issues
 
+### Issue 1. two same spm depencies in `Pods.xcodeproj`
 [cocoapods-spm](https://github.com/trinhngocthuyen/cocoapods-spm) hook after `running post integrate hooks`, so there may exists two same spm depencies in `Pods.xcodeproj`.
 
 App extension & main project should **manully** add spm depencies & add spm library/framework in `Link Binary With Libraries` to avoid `no such module` issue.
+
+### Issue 2. `pod lib lint` or `pod repo push` fails if replacing `dependency` with `spm_dependency` even install cocoapods-spm plugin.
+
+`$ pod repo push mine_specs 'XXX.podspec' --sources='https://cdn.cocoapods.org/,git@github.com:XXX/mine_specs.git' --allow-warnings --skip-import-validation --skip-tests --verbose --local-only`
+
+```
+[!] Invalid `PRTAddressKit.podspec` file: undefined method `spm_dependency' for an instance of Pod::Specification.
+
+ #  from /Users/gavinxiang/Downloads/XXX/XXX.podspec:94
+ #  -------------------------------------------
+ #    s.dependency "Moya", "~> 15.0.0"
+ >    s.spm_dependency "SnapKit", "~> 5.0.1"
+ #    s.dependency "RxSwift", "~> 6.0.0"
+ #  -------------------------------------------
+
+[!] The `XXX.podspec` specification does not validate.
+```
+**We can only manually push `.podspec` or using feature branch to install pods for now. **
+
+~Tip: changing cocoapods/fastlane shells is dangerous!~
