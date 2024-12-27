@@ -162,7 +162,7 @@ App extension & main project should **manully** add spm depencies & add spm libr
 `$ pod repo push mine_specs 'XXX.podspec' --sources='https://cdn.cocoapods.org/,git@github.com:XXX/mine_specs.git' --allow-warnings --skip-import-validation --skip-tests --verbose --local-only`
 
 ```
-[!] Invalid `PRTAddressKit.podspec` file: undefined method `spm_dependency' for an instance of Pod::Specification.
+[!] Invalid `XXXKit.podspec` file: undefined method `spm_dependency' for an instance of Pod::Specification.
 
  #  from /Users/gavinxiang/Downloads/XXX/XXX.podspec:94
  #  -------------------------------------------
@@ -175,4 +175,71 @@ App extension & main project should **manully** add spm depencies & add spm libr
 ```
 **We can only manually push `.podspec` or using feature branch to install pods for now. **
 
-~Tip: changing cocoapods/fastlane shells is dangerous!~
+Fixed pod repo push failed while downloading dependencies & generating pods project in Gemfile:
+
+`gem "cocoapods-spm2", '~>0.1.20'`
+
+```
+$ cat Gemfile
+source "https://rubygems.org"
+
+ruby "3.3.5"
+
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+
+gem "cocoapods"
+gem "fastlane"
+gem 'fastools', :git => 'git@github.com:MichaelLedger/fastools.git', :branch => 'master'
+gem "cocoapods-spm2", '~>0.1.20'
+```
+
+but still cannot find moudle
+
+```
+    - ERROR | xcodebuild:  XXXCustomDesignView.swift:9:8: error: no such module 'SDWebImage'
+[!] The `XXXKit.podspec` specification does not validate.
+
+/Users/gavinxiang/.rbenv/versions/3.3.5/lib/ruby/gems/3.3.0/gems/cocoapods-1.15.2/lib/cocoapods/command/repo/push.rb:156:in `block in validate_podspec_files'
+```
+
+because `plugin "cocoapods-spm"` is not in Podfile while lint. [cocoapods-spm2](https://github.com/MichaelLedger/cocoapods-spm.git)
+
+[Cocoapod: how to push spec to my private repo without lint?](https://stackoverflow.com/questions/33206886/cocoapod-how-to-push-spec-to-my-private-repo-without-lint)
+
+```
+$ vim /Users/gavinxiang/.rbenv/versions/3.3.5/lib/ruby/gems/3.3.0/gems/cocoapods-1.15.2/lib/cocoapods/command/repo/push.rb
+```
+
+**force disable `validate_podspec_files` in `run` method in cocoapods `push.rb` works!**:
+```
+        def run
+          open_editor if @commit_message && @message.nil?
+          check_if_push_allowed
+          update_sources if @update_sources
+          #validate_podspec_files # This is disabled because it is not needed for SPM
+          check_repo_status
+          update_repo
+          add_specs_to_repo
+          push_repo unless @local_only
+        end
+
+```
+```
+$ bundle exec pod repo push mine_repos 'XXXKit.podspec' --sources='https://cdn.cocoapods.org/,git@github2.com:MichaelLedger/Specs.git' --allow-warnings --skip-import-validation --skip-tests --verbose --local-only
+
+Updating the `mine_repos' repo
+
+  $ /usr/bin/git -C /Users/gavinxiang/.cocoapods/repos/mine_repos pull
+  Already up to date.
+
+Adding the spec to the `mine_repos' repo
+
+  $ /usr/bin/git -C /Users/gavinxiang/.cocoapods/repos/mine_repos status --porcelain
+  ?? XXXKit/0.1.62/
+ - [Update] XXXKit (0.1.62)
+  $ /usr/bin/git -C /Users/gavinxiang/.cocoapods/repos/mine_repos add XXXKit
+  $ /usr/bin/git -C /Users/gavinxiang/.cocoapods/repos/mine_repos commit --no-verify -m [Update] XXXKit (0.1.62)
+  [master bd16046] [Update] XXXKit (0.1.62)
+   1 file changed, 146 insertions(+)
+   create mode 100644 XXXKit/0.1.62/XXXKit.podspec
+```
