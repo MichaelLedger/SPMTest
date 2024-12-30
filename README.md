@@ -243,3 +243,82 @@ Adding the spec to the `mine_repos' repo
    1 file changed, 146 insertions(+)
    create mode 100644 XXXKit/0.1.62/XXXKit.podspec
 ```
+
+### Issue3: adding plugin `cocoapods-spm` in Podfile before generating pods project.
+
+[iOS] script_phases: Invalid execution position value `before_generate_project` in shell script `Configure Test Environment`. 
+
+Available options are `before_compile, after_compile, before_headers, after_headers, any`.
+
+```
+// .podspec
+# ――― Test Configurations ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files  = "Source/Classes/Address/*.swift", "Source/Classes/Account/*.swift", "Source/Classes/Foundation/*.swift",
+    test_spec.exclude_files = "Classes/Exclude"
+
+    # Specify plugins in the test environment
+    test_spec.script_phase = {
+      # :name => 'Configure Test Environment',
+      # :script => 'echo "plugin \'cocoapods-spm\'" >> ${PODS_ROOT}/Podfile',
+      # :execution_position => :before_compile
+
+      :name => 'Add Plugins to Podfile',
+      :script => '<<-SCRIPT
+        PODFILE="${PODS_ROOT}/Podfile"
+        if ! grep -q "plugin \'cocoapods-spm\'" "$PODFILE"; then
+          # Create temp file
+          tmp_file=$(mktemp)
+          # Add plugin at the top
+          echo "plugin \'cocoapods-spm\'" > "$tmp_file"
+          # Append original Podfile content
+          cat "$PODFILE" >> "$tmp_file"
+          # Replace original file
+          mv "$tmp_file" "$PODFILE"
+        fi
+      SCRIPT',
+      :execution_position => :before_headers
+    }
+  end
+```
+
+`Adding Build Phase '[CP-User] Add Plugins to Podfile' to project.` is too later!
+
+```
+Comparing resolved specification to the sandbox manifest
+  A Alamofire
+  A Clarity
+  A Moya
+  A XXXKit
+  A PRTBaseLog
+  A PRTBaseTracker
+  A RxCocoa
+  A RxRelay
+  A RxSwift
+  A SwiftyBeaver
+
+Resolving SPM dependencies
+The following packages were not declared in Podfile:
+  • SnapKit: used by XXXKit
+  • SDWebImage: used by XXXKit
+Use the `spm_pkg` method to declare those packages in Podfile.
+
+Downloading dependencies
+...
+
+Integrating target `Clarity`
+    Adding Build Phase '[CP] Copy XCFrameworks' to project.
+
+Integrating target `XXXKit`
+    Adding Build Phase '[CP] Embed Pods Frameworks' to project.
+    Adding Build Phase '[CP] Copy Pods Resources' to project.
+    Adding Build Phase '[CP-User] Add Plugins to Podfile' to project.
+  - Stabilizing target UUIDs
+  - Running post install hooks
+  - Writing Xcode project file to `../../../../private/var/folders/wk/frkkcch539lc6s2dk6dw9dy80000gn/T/CocoaPods-Lint-20241230-99199-5dt736-XXXKit/Pods/Pods.xcodeproj`
+  Cleaning up sandbox directory
+
+Integrating client project
+
+[!] Please close any current Xcode sessions and use `App.xcworkspace` for this project from now on.
+```
