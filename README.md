@@ -338,3 +338,33 @@ pre_install do |installer|
     end
 end
 ```
+
+## Practice
+### Could use different tags to distinguish between cocoapods and spm.
+
+[GoogleUtilities - 8.0.2](https://github.com/google/GoogleUtilities/releases/tag/8.0.2)
+
+[GoogleUtilities - CocoaPods-8.0.2](https://github.com/google/GoogleUtilities/releases/tag/CocoaPods-8.0.2)
+
+- Swift Package Manager
+
+By creating and pushing a tag for Swift PM, the newly tagged version will be immediately released for public use. Given this, please verify the intended time of release for Swift PM.
+
+Add a version tag for Swift PM
+```
+git tag {version}
+git push origin {version}
+```
+Note: Ensure that any inflight PRs that depend on the new GoogleUtilities version are updated to point to the newly tagged version rather than a checksum.
+
+- CocoaPods
+
+Publish the newly versioned pod to CocoaPods
+
+It's recommended to point to the GoogleUtilities.podspec in staging to make sure the correct spec is being published.
+
+`pod trunk push ~/.cocoapods/repos/staging/GoogleUtilities/{version}/GoogleUtilities.podspec.json`
+
+Note: In some cases, it may be acceptable to `pod trunk push` with the `--skip-tests` flag. Please double check with the maintainers before doing so.
+
+The pod push was successful if the above command logs: 🚀  GoogleUtilities ({version}) successfully published. In addition, a new commit that publishes the new version (co-authored by CocoaPodsAtGoogle) should appear in the CocoaPods specs repo. Last, the latest version should be displayed on GoogleUtilities's CocoaPods page.
