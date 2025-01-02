@@ -322,3 +322,19 @@ Integrating client project
 
 [!] Please close any current Xcode sessions and use `App.xcworkspace` for this project from now on.
 ```
+
+In addition to the `post_install` hook function, there is another hook function in cocoapods, `pre_install`, which allows us to do something after the pod library has been downloaded but not installed, and the `post_install` hook function allows us to do something before the project is written to the hard disk.
+
+```
+# pre_install hook that removes unwanted localizations
+pre_install do |installer|
+    supported_locales = ['base', 'da', 'en']
+
+    Dir.glob(File.join(installer.sandbox.pod_dir('FormatterKit'), '**', '*.lproj')).each do |bundle|
+        if (!supported_locales.include?(File.basename(bundle, ".lproj").downcase))
+            puts "Removing #{bundle}"
+            FileUtils.rm_rf(bundle)
+        end
+    end
+end
+```
