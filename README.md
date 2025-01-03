@@ -339,6 +339,26 @@ pre_install do |installer|
 end
 ```
 
+### Issue4: [critical cross-dependency bug](https://github.com/swiftlang/swift-package-manager/issues/4581)
+
+Note: There is a critical cross-dependency bug affecting many projects including [RxSwift](https://github.com/ReactiveX/RxSwift?tab=readme-ov-file) in Swift Package Manager. We've filed a bug (SR-12303) in early 2020 but have no answer yet. Your mileage may vary. A partial workaround can be found [here](https://github.com/ReactiveX/RxSwift/issues/2127#issuecomment-717830502).
+
+```
+// swift-tools-version:5.0
+
+import PackageDescription
+
+let package = Package(
+  name: "RxProject",
+  dependencies: [
+    .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.0.0"))
+  ],
+  targets: [
+    .target(name: "RxProject", dependencies: ["RxSwift", .product(name: "RxCocoa", package: "RxSwift")]),
+  ]
+)
+```
+
 ## Practice
 ### Could use different tags to distinguish between cocoapods and spm.
 
@@ -616,3 +636,15 @@ let package = Package(
   swiftLanguageVersions: [.v5]
 )
 ```
+
+### [`library(name:type:targets:)`](https://developer.apple.com/documentation/packagedescription/product/library(name:type:targets:))
+
+> A library’s product can be either statically or dynamically linked. It’s recommended that you don’t explicitly declare the type of library, so Swift Package Manager can choose between static or dynamic linking based on the preference of the package’s consumer.
+
+### [Understanding Static Library vs Dynamic Library in iOS Swift](https://medium.com/takodigital/understanding-static-library-vs-dynamic-library-in-ios-swift-f675f603a050)
+
+Understanding the differences between static libraries and dynamic libraries is essential for iOS Swift developers.
+
+**Static libraries provide simplicity, performance, and code protection, while dynamic libraries offer code sharing, versioning flexibility, and dynamic loading capabilities.**
+
+By choosing the appropriate type of library based on your project’s requirements, you can optimize your development process and create efficient, scalable iOS applications.
