@@ -343,6 +343,8 @@ end
 
 Note: There is a critical cross-dependency bug affecting many projects including [RxSwift](https://github.com/ReactiveX/RxSwift?tab=readme-ov-file) in Swift Package Manager. We've filed a bug (SR-12303) in early 2020 but have no answer yet. Your mileage may vary. A partial workaround can be found [here](https://github.com/ReactiveX/RxSwift/issues/2127#issuecomment-717830502).
 
+**For my project it work great. In build settings for main app in chapter build options I change `Enable Testing Search Path` from `NO` to `YES`. I think, that is allow to find path to XCTest framework and use necessary symbol.**
+
 ```
 // swift-tools-version:5.0
 
