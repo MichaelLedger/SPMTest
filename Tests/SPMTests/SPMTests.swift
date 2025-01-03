@@ -9,8 +9,12 @@ import Testing
 import XCTest
 import SPMTest
 import UIKit
-//import Performance
-//import MJRefresh
+import Performance
+import MJRefresh
+import RxSwift
+import RxCocoa
+import RxRelay
+import RxGesture
 
 @MainActor
 struct Test {
@@ -30,16 +34,22 @@ struct Test {
             XCTAssert(false, error.localizedDescription)
         }
         
-//        Performance().startMonitor()
+        Performance().startMonitor()
+
+        let tableVc = await UITableViewController()
+        let action: MJRefreshComponentAction = {
+            print("refresh")
+        }
+        await tableVc.tableView.mj_header = await MJRefreshHeader(refreshingBlock: action)
         
-////        let model = OCModel()
-////        print("\(model.age)")
-        ///
-//        let tableVc = await UITableViewController()
-//        let action: MJRefreshComponentAction = {
-//            print("refresh")
-//        }
-//        await tableVc.tableView.mj_header = await MJRefreshHeader(refreshingBlock: action)
+        let btn = UIButton(type: .custom)
+        btn.rx.controlEvent(.touchUpInside).throttle(.milliseconds(500), scheduler: MainScheduler.instance).subscribe(onNext: {
+            print("tap")
+        }).disposed(by: DisposeBag())
+        
+        UIView().rx.tapGesture().when(.recognized).subscribe(onNext: { _ in 
+            print("tap")
+        }).disposed(by: DisposeBag())
         
         XCTAssert(true, "Pass");
     }

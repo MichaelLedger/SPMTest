@@ -20,7 +20,9 @@ let package = Package(
         ),
         .library(name: "SPMTest", targets: ["SPMTest"])
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "git@github.com:RxSwiftCommunity/RxGesture.git", .upToNextMajor(from: "4.0.4"))
+    ],
     targets: [
         // Objective-C Library
         .target(
@@ -50,7 +52,11 @@ let package = Package(
         ),
         .testTarget(name: "PerformanceTests", dependencies: ["Performance"]),
         // Mixed Swift and Objective-C Libraries
-        .target(name: "SPMTest", dependencies: ["MJRefresh", "Performance"], path: "SPMTest"),
+        .target(name: "SPMTest",
+                dependencies: ["MJRefresh",
+                               "Performance",
+                               "RxGesture"],
+                path: "SPMTest"),
         .testTarget(name: "SPMTests", dependencies: ["SPMTest"])
     ],
     swiftLanguageVersions: [.v5]

@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "RxGesture",
+        "repositoryURL": "git@github.com:RxSwiftCommunity/RxGesture.git",
+        "state": {
+          "branch": null,
+          "revision": "1b137c576b4aaaab949235752278956697c9e4a0",
+          "version": "4.0.4"
+        }
+      },
+      {
+        "package": "RxSwift",
+        "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "c7c7d2cf50a3211fe2843f76869c698e4e417930",
+          "version": "6.8.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
