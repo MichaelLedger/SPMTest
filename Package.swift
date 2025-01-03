@@ -18,10 +18,11 @@ let package = Package(
             name: "Performance",
             targets: ["Performance"]
         ),
-        .library(name: "SPMTest", targets: ["SPMTest"])
+        .library(name: "SPMLib", type: .dynamic, targets: ["SPMLib"])
     ],
     dependencies: [
-        .package(url: "git@github.com:RxSwiftCommunity/RxGesture.git", .upToNextMajor(from: "4.0.4"))
+        .package(url: "git@github.com:RxSwiftCommunity/RxGesture.git", .upToNextMajor(from: "4.0.4")),
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.8.0"))
     ],
     targets: [
         // Objective-C Library
@@ -52,12 +53,13 @@ let package = Package(
         ),
         .testTarget(name: "PerformanceTests", dependencies: ["Performance"]),
         // Mixed Swift and Objective-C Libraries
-        .target(name: "SPMTest",
+        .target(name: "SPMLib",
                 dependencies: ["MJRefresh",
                                "Performance",
-                               "RxGesture"],
+                               "RxGesture",
+                               "RxSwift"],
                 path: "SPMTest"),
-        .testTarget(name: "SPMTests", dependencies: ["SPMTest"])
+        .testTarget(name: "SPMTests", dependencies: ["SPMLib"], path: "Tests/SPMTests")
     ],
     swiftLanguageVersions: [.v5]
 )
