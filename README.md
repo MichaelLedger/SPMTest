@@ -130,6 +130,30 @@ Run before build project:
 
 `bundle exec pod install --no-repo-update --verbose`
 
+## PackageFrameworks duplicated issues: No such file or directory `PackageFrameworks/RxBlocking-Dynamic.framework/RxBlocking-Dynamic`
+
+```
+No such file or directory: '/Users/gavinxiang/Library/Developer/Xcode/DerivedData/XXX-dyjvmrzjyotgnpgeyliwnrbquytk/Build/Products/Debug-iphoneos/PackageFrameworks/RxBlocking-Dynamic.framework/RxBlocking-Dynamic'
+```
+
+```
+➜  ~ cd /Users/gavinxiang/Library/Developer/Xcode/DerivedData/XXX-dyjvmrzjyotgnpgeyliwnrbquytk/Build/Products/Debug-iphoneos/PackageFrameworks
+➜  PackageFrameworks ls
+RxBlocking-Dynamic.framework
+RxBlocking.framework
+RxBlocking_CFFDE33F7EB8BFD_PackageProduct.framework
+RxCocoa-Dynamic.framework
+RxCocoa.framework
+RxCocoaRuntime.framework
+RxCocoa_38E61CAF42DDE0B6_PackageProduct.framework
+RxRelay-Dynamic.framework
+RxRelay.framework
+RxSwift-Dynamic.framework
+RxSwift.framework
+SDWebImage_-382901E92613C85E_PackageProduct.framework
+SnapKit_3965163F11347F41_PackageProduct.framework
+```
+
 ##  Build service could not create build operation: unknown error while handling message: MsgHandlingError(message: "unable to initiate PIF transfer session (operation in progress?)")
 
 relaunch Xcode to refetch the remote package dependencies.
