@@ -133,6 +133,18 @@ Run before build project:
 ## PackageFrameworks duplicated issues: No such file or directory `PackageFrameworks/RxBlocking-Dynamic.framework/RxBlocking-Dynamic`
 
 ```
+    {
+      url: "https://github.com/ReactiveX/RxSwift.git",
+      requirement: {
+        kind: "upToNextMajorVersion",
+        minimumVersion: "6.8.0"
+      },
+      product_names: ["RxSwift-Dynamic","RxCocoa-Dynamic","RxRelay-Dynamic","RxBlocking-Dynamic"],
+      targets: ["PRTAddressKit", "PRTBaseNetwork", "PRTBusinessUnitGoogleLogin", "PRTSelectPhoto", "PRTBusinessUnitLogin", "PRTBusinessUnitCommon"].concat(podsShareExtensions)
+    }
+```
+
+```
 No such file or directory: '/Users/gavinxiang/Library/Developer/Xcode/DerivedData/XXX-dyjvmrzjyotgnpgeyliwnrbquytk/Build/Products/Debug-iphoneos/PackageFrameworks/RxBlocking-Dynamic.framework/RxBlocking-Dynamic'
 ```
 
@@ -152,6 +164,20 @@ RxSwift-Dynamic.framework
 RxSwift.framework
 SDWebImage_-382901E92613C85E_PackageProduct.framework
 SnapKit_3965163F11347F41_PackageProduct.framework
+```
+
+**We can only integrate swift package as library for now, not framework!**
+
+```
+    {
+      url: "https://github.com/ReactiveX/RxSwift.git",
+      requirement: {
+        kind: "upToNextMajorVersion",
+        minimumVersion: "6.8.0"
+      },
+      product_names: ["RxSwift","RxCocoa","RxRelay","RxBlocking"],
+      targets: ["PRTAddressKit", "PRTBaseNetwork", "PRTBusinessUnitGoogleLogin", "PRTSelectPhoto", "PRTBusinessUnitLogin", "PRTBusinessUnitCommon"].concat(podsShareExtensions)
+    }
 ```
 
 ##  Build service could not create build operation: unknown error while handling message: MsgHandlingError(message: "unable to initiate PIF transfer session (operation in progress?)")
@@ -738,4 +764,33 @@ undefined method `name' for an instance of Xcodeproj::Project::Object::XCRemoteS
 /Users/gavinxiang/.rbenv/versions/3.3.5/lib/ruby/gems/3.3.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/native_target.rb:254:in `add_dependency'
 ```
 
-pkg or ref has no `name` method and xcodeproj faileds to load!!!
+New PBXTargetDependency and add target dependencies.
+
+```
+  def add_spm_to_target(project, target_name, url, requirement, product_name)
+    project.targets.each do |target|
+      if target.name == target_name
+        pkg = project.root_object.package_references.find { |pkg| pkg.repositoryURL == url }
+        if pkg.nil?
+          pkg = project.new(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference)
+          pkg.repositoryURL = url
+          pkg.requirement = requirement
+          project.root_object.package_references << pkg
+          puts "=====new swift package reference==#{pkg.repositoryURL}"
+        else
+          puts "=====matched swift package reference==#{pkg.repositoryURL}"
+        end
+        ref = project.new(Xcodeproj::Project::Object::XCSwiftPackageProductDependency)
+        ref.package = pkg
+        ref.product_name = product_name
+        target.package_product_dependencies << ref
+        
+        # Add Target Dependency
+        dependency = project.new(Xcodeproj::Project::Object::PBXTargetDependency)
+        dependency.product_ref = ref
+        target.dependencies << dependency
+      end
+    end
+    project.save
+  end
+```
