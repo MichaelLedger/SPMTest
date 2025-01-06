@@ -19,6 +19,14 @@ Build settings configured to ignore the package in release builds.To verify this
 // Build Settings -> Excluded Source File Names 
 `"EXCLUDED_SOURCE_FILE_NAMES[arch=*]" = "LookinServer*";`
 
+## [Is it okay to have both SPM and Cocoapods in your project?](https://www.reddit.com/r/iOSProgramming/comments/16dvujc/is_it_okay_to_have_both_spm_and_cocoapods_in_your/)
+
+No one's mentioned this, but yes, it can work, as long as the dependencies on each side have independent trees.
+
+**That is, all of the CocoaPods dependencies should be separate from all the SPM dependencies. Otherwise you're going to get duplicate symbol errors or other build issues.**
+
+At best you'd increase your app size with duplicate libraries.
+
 ## SPM mixed with CocoaPods
 
 [cocoapods-spm](https://github.com/trinhngocthuyen/cocoapods-spm)
@@ -650,3 +658,50 @@ Understanding the differences between static libraries and dynamic libraries is 
 **Static libraries provide simplicity, performance, and code protection, while dynamic libraries offer code sharing, versioning flexibility, and dynamic loading capabilities.**
 
 By choosing the appropriate type of library based on your project’s requirements, you can optimize your development process and create efficient, scalable iOS applications.
+
+### Try add swift package library to pod target's target denpendecies
+
+[lib/xcodeproj/project/object/native_target.rb](https://github.com/CocoaPods/Xcodeproj/blob/master/lib/xcodeproj/project/object/native_target.rb)
+
+```
+# Add Target Dependency
+#        container_proxy = Xcodeproj::Project::Object::PBXContainerItemProxy.new(
+#          {
+#            container_portal: project.root_object.uuid,
+#            proxy_type: 1, # 1 for target, 2 for project
+#            remote_global_id_string: pkg.uuid,
+#            remote_info: product_name
+#          }
+#        )
+#        container_proxy = Xcodeproj::Project::Object::PBXContainerItemProxy.new(
+#          project.root_object.uuid, # container_portal
+#          pkg.uuid # remote_global_id_string
+#        )
+        container_proxy = project.new(Xcodeproj::Project::PBXContainerItemProxy)
+        container_proxy.container_portal = project.root_object.uuid
+        container_proxy.proxy_type = "1"
+        container_proxy.remote_global_id_string = ref.uuid
+        container_proxy.remote_info = ref.product_name
+        puts "=====container_proxy==#{container_proxy}"
+#        target_dependency = Xcodeproj::Project::Object::PBXTargetDependency.new(
+#          product_name,
+#          container_proxy
+#        )
+        target_dependency = project.new(Xcodeproj::Project::PBXTargetDependency)
+        target_dependency.name = ref.product_name
+#        target_dependency.target = target if target.project == project
+        target_dependency.target_proxy = container_proxy
+        puts "=====target_dependency==#{target_dependency}"
+        puts "=====add_target_dependency==#{product_name}==to_target==#{target_name}"
+        target.dependencies << target_dependency
+```
+
+```
+[!] An error occurred while processing the post-integrate hook of the Podfile.
+
+undefined method `name' for an instance of Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
+
+/Users/gavinxiang/.rbenv/versions/3.3.5/lib/ruby/gems/3.3.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/native_target.rb:254:in `add_dependency'
+```
+
+pkg or ref has no `name` method and xcodeproj faileds to load!!!
