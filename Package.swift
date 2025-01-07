@@ -2,8 +2,11 @@
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 /*
  // Xcode 16.2 + macOS Sequoia 15.2
+ 
  x-xcode-log://B1630E03-1A90-4B16-AD71-29723E4F88C5 ignoring broken symlink /Users/gavinxiang/Downloads/SPMTest/Performance/Sources/include/OCModel.h
  x-xcode-log://B1630E03-1A90-4B16-AD71-29723E4F88C5 target at '/Users/gavinxiang/Downloads/SPMTest/Performance/Sources' contains mixed language source files; feature not supported
+ 
+ x-xcode-log://433D852D-0F00-40CA-9519-963BB17E7C9D 'rxgesture' dependency on 'https://github.com/ReactiveX/RxSwift.git' conflicts with dependency on 'git@github.com:MichaelLedger/RxSwift.git' which has the same identity 'rxswift'. this will be escalated to an error in future versions of SwiftPM.
  */
 
 import PackageDescription
