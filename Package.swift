@@ -22,7 +22,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "git@github.com:RxSwiftCommunity/RxGesture.git", .upToNextMajor(from: "4.0.4")),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.8.0"))
+        //.package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.8.0"))
+        .package(url: "git@github.com:MichaelLedger/RxSwift.git", .upToNextMajor(from: "6.8.3"))
     ],
     targets: [
         // Objective-C Library
@@ -57,7 +58,9 @@ let package = Package(
                 dependencies: ["MJRefresh",
                                "Performance",
                                "RxGesture",
-                               "RxSwift"],
+                               //"RxSwift",
+                               //.product(name: "RxSwift-Dynamic", package: "RxSwift")
+                              ],
                 path: "SPMTest"),
         .testTarget(name: "SPMTests", dependencies: ["SPMLib"], path: "Tests/SPMTests")
     ],
