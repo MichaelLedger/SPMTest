@@ -7,8 +7,7 @@
 
 import Testing
 import XCTest
-import SPMTest
-import UIKit
+import SPMLib
 import Performance
 import MJRefresh
 import RxSwift
