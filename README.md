@@ -429,6 +429,101 @@ You can manullay add lost module in pod target's target dependencies to resolve 
 
 It's hard to add dependency via shell command because `pod install` will reset all `target dependencies`.
 
+## Best practice: publish static library & dynamic framework simultaneously via [distributing binary frameworks](https://developer.apple.com/documentation/xcode/distributing-binary-frameworks-as-swift-packages)
+
+*Maybe this resolution can resolve 'RxRelay' & 'RxSwift' critical cross-dependency bug.*
+
+[AppsFlyerFramework/releases](https://github.com/AppsFlyerSDK/AppsFlyerFramework/releases)
+
+```
+ # For statically linked library
+ https://github.com/AppsFlyerSDK/AppsFlyerFramework-Static
+
+ # For dynamically linked library
+ https://github.com/AppsFlyerSDK/AppsFlyerFramework-Dynamic
+
+ # For Strict (No IDFA colection) library
+ https://github.com/AppsFlyerSDK/AppsFlyerFramework-Strict
+```
+ 
+[AppsFlyerFramework-Static/Package.swift](https://github.com/AppsFlyerSDK/AppsFlyerFramework-Static/blob/main/Package.swift)
+```
+// swift-tools-version:5.3
+import PackageDescription
+
+let package = Package(
+    name: "AppsFlyerLib",
+    products: [
+        .library(
+            name: "AppsFlyerLib-Static",
+            targets: ["AppsFlyerLib"])
+    ],
+    targets: [
+        .binaryTarget(
+            name: "AppsFlyerLib",
+            url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework/releases/download/6.15.3/AppsFlyerLib-Static-SPM.xcframework.zip",
+            checksum: "c256553d5fe6781b4525c424549e432765e6d8ec37357594d9d4862827f633d0"
+        )
+    ]
+)
+```
+
+[AppsFlyerFramework-Dynamic/Package.swift](https://github.com/AppsFlyerSDK/AppsFlyerFramework-Dynamic/blob/main/Package.swift)
+```
+// swift-tools-version:5.3
+import PackageDescription
+
+let package = Package(
+    name: "AppsFlyerLib",
+    products: [
+        .library(
+            name: "AppsFlyerLib-Dynamic",
+            targets: ["AppsFlyerLib"])
+    ],
+    targets: [
+        .binaryTarget(
+            name: "AppsFlyerLib",
+            url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework/releases/download/6.15.3/AppsFlyerLib-Dynamic-SPM.xcframework.zip",
+            checksum: "c0bee56914a3d09e99b9c9c36c1444b0926e050396777b3e470b09212bd9b4bf"
+        )
+    ]
+)
+```
+
+[AppsFlyerFramework-Strict/Package.swift](https://github.com/AppsFlyerSDK/AppsFlyerFramework-Strict/blob/main/Package.swift)
+```
+// swift-tools-version:5.3
+import PackageDescription
+
+let package = Package(
+    name: "AppsFlyerLib",
+    products: [
+        .library(
+            name: "AppsFlyerLib-Strict",
+            targets: ["AppsFlyerLib"])
+    ],
+    targets: [
+        .binaryTarget(
+            name: "AppsFlyerLib",
+            url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework/releases/download/6.15.3/AppsFlyerLib-Strict-SPM.xcframework.zip",
+            checksum: "5fc2d536d5059363e79aa82073c6cf26ef0e02c7f7ccd6787e593593db855b48"
+        )
+    ]
+)
+```
+
+### [Checksums on zip files to verify whether zip files is modified](https://superuser.com/questions/1786609/zip-file-to-verify-if-not-modified)
+
+On macOS in the terminal you can run the following to get **the SHA-256 checksum** of your ZIP archive:
+
+```
+$ shasum -a 256 AppsFlyerLib-Dynamic-SPM.xcframework.zip
+
+c0bee56914a3d09e99b9c9c36c1444b0926e050396777b3e470b09212bd9b4bf  AppsFlyerLib-Dynamic-SPM.xcframework.zip
+```
+
+The checksum of the ZIP archive can the be checked/generated on any system (each system with their own method) and if it matches with the one you generated it means the file wasn't modified.
+
 ## Practice
 ### Could use different tags to distinguish between cocoapods and spm.
 
