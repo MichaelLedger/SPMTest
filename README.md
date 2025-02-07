@@ -41,6 +41,16 @@ This plugin will auto add swift packages to `Pods.xcodeproj` for spm_pkg in `Pod
 
 Run `bundle install`
 
+**Use `bundle info [gemname]` to see where a bundled gem is installed.**
+
+```
+% bundle info cocoapods-spm
+  * cocoapods-spm (0.1.11)
+    Summary: CocoaPods plugin to add SPM dependencies to CocoaPods targets
+    Homepage: https://github.com/trinhngocthuyen/cocoapods-spm
+    Path: /Users/gavinxiang/.rbenv/versions/3.3.5/lib/ruby/gems/3.3.0/gems/cocoapods-spm-0.1.11
+```
+
 // Podfile
 ```
   spm_pkg 'SDWebImage',
