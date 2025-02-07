@@ -70,6 +70,8 @@ Run `bundle install`
 
 Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage` & `YYYKit1`,`YYYKit2` depends on `SnapKit`.
 
+**Add `.spm.pods/` & `.build/` to `.gitignore` when using spm with cocoapods-spm plugin.**
+
 ## [Using a post_install script to add SPM reps to cocoa pods targets to resolve no such module issues](https://github.com/CocoaPods/CocoaPods/issues/10049#issuecomment-819480131)
 ```
   post_integrate do |installer|
