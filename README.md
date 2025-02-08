@@ -72,6 +72,48 @@ Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage` & `YYYKit1`,`YYYKit
 
 **Add `.spm.pods/` & `.build/` to `.gitignore` when using spm with cocoapods-spm plugin.**
 
+## `swift package resolve` & `swift package update`
+
+We need to call `swift package resolve` this will only update the resolved file, while `swift package update` updates the swift file too with latest available updates.
+
+```
+➜  common_ios_prt_ui_components git:(add_spm) swift package update
+
+diff --git a/Package.resolved b/Package.resolved
+index 40109561..38c0ed2f 100644
+--- a/Package.resolved
++++ b/Package.resolved
+@@ -33,8 +33,8 @@
+         "repositoryURL": "https://github.com/microsoft/clarity-apps.git",
+         "state": {
+           "branch": null,
+-          "revision": "6bd0243fffab0d039810eb46c0a8b75d3a74a3e6",
+-          "version": "3.0.2"
++          "revision": "1f6cca48f906eb09a1c338bebab369bd0723c012",
++          "version": "3.0.4"
+         }
+       },
+       {
+@@ -51,7 +51,7 @@
+         "repositoryURL": "https://github.com/Planetart/fp_ios_file_download_manager.git",
+         "state": {
+           "branch": "add_spm",
+-          "revision": "e3d0b3fba2353cdce91b4088a77f8eb771fcaaad",
++          "revision": "68051c09820665d725d1d68cf023de94a0a25e6d",
+           "version": null
+         }
+       },
+@@ -87,7 +87,7 @@
+         "repositoryURL": "https://github.com/Planetart/MirrorSDK.git",
+         "state": {
+           "branch": "add_spm",
+-          "revision": "618983d4c237d1dfdd69ab45e45d6a0c131d38b4",
++          "revision": "1d57c6c3d2d291c322f7f0311d13daa41c150f7a",
+           "version": null
+         }
+       },
+```
+
 **⚠️ If using branch to integrate spm mixed with cocoaPods, make sure `xcshareddata/swiftpm/Package.resolved` is in the list of git tracked files.**
 
 ```
@@ -95,6 +137,19 @@ index 216842a7bb..9b90d3d12b 100644
        }
      },
      {
+```
+
+## `Package.swift` need add `cSettings` if this module may be used by Objective-C
+
+```
+.target(
+    name: "MDFileDownloadManager",
+    path: "Sources/MDFileDownloadManager",
+    publicHeadersPath: "include",
+    cSettings: [
+        .headerSearchPath("include")
+    ]
+)
 ```
 
 ## [Using a post_install script to add SPM reps to cocoa pods targets to resolve no such module issues](https://github.com/CocoaPods/CocoaPods/issues/10049#issuecomment-819480131)
