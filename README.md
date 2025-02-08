@@ -72,6 +72,31 @@ Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage` & `YYYKit1`,`YYYKit
 
 **Add `.spm.pods/` & `.build/` to `.gitignore` when using spm with cocoapods-spm plugin.**
 
+**⚠️ If using branch to integrate spm mixed with cocoaPods, make sure `xcshareddata/swiftpm/Package.resolved` is in the list of git tracked files.**
+
+```
+  spm_pkg "MDFileDownloadManager",
+      :git => "https://github.com/Planetart/fp_ios_file_download_manager.git",
+      :branch => "add_spm",
+      :products => ["MDFileDownloadManager"]
+```
+
+```
+diff --git a/FreePrints/FullBellyIntl.xcworkspace/xcshareddata/swiftpm/Package.resolved b/FreePrints/FullBellyIntl.xcworkspace/xcshareddata/swiftpm/Package.resolved
+index 216842a7bb..9b90d3d12b 100644
+--- a/FreePrints/FullBellyIntl.xcworkspace/xcshareddata/swiftpm/Package.resolved
++++ b/FreePrints/FullBellyIntl.xcworkspace/xcshareddata/swiftpm/Package.resolved
+@@ -178,7 +178,7 @@
+       "location" : "https://github.com/Planetart/fp_ios_file_download_manager.git",
+       "state" : {
+         "branch" : "add_spm",
+-        "revision" : "48312b04bc2a016b7438978eda413d670d76f4f8"
++        "revision" : "6022bd6fc20801d508194e60876b02bc39ba28d3"
+       }
+     },
+     {
+```
+
 ## [Using a post_install script to add SPM reps to cocoa pods targets to resolve no such module issues](https://github.com/CocoaPods/CocoaPods/issues/10049#issuecomment-819480131)
 ```
   post_integrate do |installer|
