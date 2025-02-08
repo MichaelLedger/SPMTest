@@ -80,6 +80,8 @@ corresponding basedOn/packageRef/state in `.spm.pods/packages/.umbrella/.build/w
 ```
 to force reload it then recall `bundle exec pod install --verbose`.**
 
+**It is recommended to delete the entire folder `.spm.pods` directly. Complex nested dependencies make it difficult to accurately locate the libraries that need to be deleted.**
+
 Below shows `FileDownloadManager` not been updated as `MDFileDownloadManager` which defined in Package.swift, which causing Xcode build always failed!
 
 `/Users/gavinxiang/Library/Developer/Xcode/DerivedData/FullBellyIntl-ewvndvrlwnotbadwkgacshfdcrsm/Build/Intermediates.noindex/Pods.build/Debug-iphoneos/Pods-fpus.build/DerivedSources/Pods_fpus_vers.c module map file '/Users/gavinxiang/Library/Developer/Xcode/DerivedData/FullBellyIntl-ewvndvrlwnotbadwkgacshfdcrsm/Build/Intermediates.noindex/GeneratedModuleMaps-iphoneos/FileDownloadManager.modulemap' not found`
