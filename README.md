@@ -72,6 +72,22 @@ Assume `XXXKit1`,`XXXKit2`,`XXXKit3` depends on `SDWebImage` & `YYYKit1`,`YYYKit
 
 **Add `.spm.pods/` & `.build/` to `.gitignore` when using spm with cocoapods-spm plugin.**
 
+## ⚠️ If library target name has been changed, you should delete library `<targe_name>.json` in path: `.spm.pods/packages/metadata` to force reload it.
+
+Below shows `FileDownloadManager` not been updated as `MDFileDownloadManager` which defined in Package.swift, which causing Xcode build always failed!
+
+`/Users/gavinxiang/Library/Developer/Xcode/DerivedData/FullBellyIntl-ewvndvrlwnotbadwkgacshfdcrsm/Build/Intermediates.noindex/Pods.build/Debug-iphoneos/Pods-fpus.build/DerivedSources/Pods_fpus_vers.c module map file '/Users/gavinxiang/Library/Developer/Xcode/DerivedData/FullBellyIntl-ewvndvrlwnotbadwkgacshfdcrsm/Build/Intermediates.noindex/GeneratedModuleMaps-iphoneos/FileDownloadManager.modulemap' not found`
+
+`OTHER_CFLAGS = $(inherited) -fmodule-map-file="${GENERATED_MODULEMAP_DIR}/PRTHandwriting.modulemap" -fmodule-map-file="${GENERATED_MODULEMAP_DIR}/FileDownloadManager.modulemap"`
+
+```
+➜  metadata git:(FPA-000-SPM-Mix-CocoaPods-Feature-2) ✗ pwd
+/Users/gavinxiang/Downloads/freeprints_ios_3/FreePrints/.spm.pods/packages/metadata
+
+➜  metadata git:(FPA-000-SPM-Mix-CocoaPods-Feature-2) ✗ cat MDFileDownloadManager.json 
+{"cLanguageStandard":null,"cxxLanguageStandard":null,"dependencies":[],"name":"MDFileDownloadManager","packageKind":{"root":["/Users/gavinxiang/Downloads/freeprints_ios_3/FreePrints/.spm.pods/packages/.umbrella/.build/checkouts/fp_ios_file_download_manager"]},"pkgConfig":null,"platforms":[],"products":[{"name":"MDFileDownloadManager","settings":[],"targets":["FileDownloadManager"],"type":{"library":["automatic"]}}],"providers":null,"swiftLanguageVersions":null,"targets":[{"dependencies":[],"exclude":[],"name":"FileDownloadManager","packageAccess":true,"path":"Sources/MDFileDownloadManager","resources":[],"settings":[],"type":"regular"}],"toolsVersion":{"_version":"6.0.0"}}%  
+```
+
 ## `swift package resolve` & `swift package update`
 
 We need to call `swift package resolve` this will only update the resolved file, while `swift package update` updates the swift file too with latest available updates.
