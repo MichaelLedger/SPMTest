@@ -1005,3 +1005,28 @@ New PBXTargetDependency and add target dependencies.
     project.save
   end
 ```
+
+### Compile Error: XXX.xcodeproj Missing package product 'SDWebImageSVGNativeCoder' & duplicate output file 'XXX.app/SDWebImage_SDWebImage.bundle' on task: PhaseScriptExecution [CP] Copy Pods Resources
+
+https://github.com/SDWebImage/SDWebImageSVGNativeCoder
+
+```
+  //spm_pkg "SDWebImage",
+      //:url => "https://github.com/SDWebImage/SDWebImage.git",
+      //:tag => "5.20.0"
+  spm_pkg "SDWebImageSVGNativeCoder",
+      :url => "https://github.com/SDWebImage/SDWebImageSVGNativeCoder.git",
+      :tag => "0.2.0"
+  spm_pkg "SDWebImageWebPCoder",
+      :url => "https://github.com/SDWebImage/SDWebImageWebPCoder.git",
+      :tag => "0.14.6"
+  spm_pkg "SDWebImageSVGCoder",
+      :url => "https://github.com/SDWebImage/SDWebImageSVGCoder.git",
+      :tag => "1.7.0"
+```
+manually delete `SDWebImage*` libraries from main project's *Link binary with libraries*.
+run `bundle exec pod install --no-repo-update --verbose`
+
+## If you've previously used CocoaPods, remove them from the project with `pod deintegrate`.
+
+[Swift Package Manager for Firebase](https://github.com/firebase/firebase-ios-sdk/blob/main/SwiftPackageManager.md)
