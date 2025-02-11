@@ -9,7 +9,7 @@ Xcode 16.2
 Use Xcode to open `Package.swift`.
 
 ## Search Scope
-Need switch search scope as `In Workspace and Package Dependencies` to searching in all codes, including package codes.
+Need switch search scope as `In Project/Workspace and Package Dependencies` to searching in all codes, including package codes.
 
 ## [Linking the package only in debug builds](https://augmentedcode.io/2022/05/02/linking-a-swift-package-only-in-debug-builds/)
 App target’s libraries.Then we’ll open build settings and look for “Excluded Source File Names” and configure release builds to ignore “[LookinServer*](https://github.com/QMUI/LookinServer)”.
