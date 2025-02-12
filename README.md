@@ -1048,3 +1048,45 @@ This file holds the list of all the files in the project, settings of targets an
     1    You may not want to work on this project alone or;
     2    You're planning on working on project from different machines;
     3    You'll want to share your code base with others;
+
+## [Bundling resources with a Swift package](https://developer.apple.com/documentation/xcode/bundling-resources-with-a-swift-package#Explicitly-declare-or-exclude-resources)
+
+Add resource files to your Swift package and access them in your code.
+
+Explicitly declare or exclude resources
+
+To add a resource that Xcode can’t handle automatically, explicitly declare it as a resource in your package manifest. The following example assumes that text.txt resides in Sources/MyLibrary and you want to include it in the MyLibrary target. To explicitly declare it as a package resource, you pass its file name to the target’s initializer in your package manifest:
+
+```
+targets: [
+    .target(
+        name: "MyLibrary",
+        resources: [
+            .process("text.txt")]
+    ),
+]
+```
+
+Note how the example code above uses the `process(_:localization:)` function. When you explicitly declare a resource, you must choose one of these rules to determine how Xcode treats the resource file:
+
+*Process rule*
+
+For most use cases, use `process(_:localization:)` to apply this rule and have Xcode process the resource according to the platform you’re building the package for. For example, Xcode may optimize image files for a platform that supports such optimizations. If you apply the process rule to a directory’s path, Xcode applies the rule recursively to the directory’s contents. If no special processing is available for a resource, Xcode copies the resource to the resource bundle’s top-level directory.
+
+*Copy rule*
+
+Some Swift packages may require a resource file to remain untouched or to retain a certain directory structure for resources. Use the `copy(_:)` function to apply this rule and have Xcode copy the resource as is to the top level of the resource bundle. If you pass a directory path to the copy rule, Xcode retains the directory’s structure.
+
+If a file resides inside a target’s folder and you don’t want it to be a package resource, pass it to the target initializer’s exclude parameter. The next example assumes that instructions.md is a Markdown file that contains documentation, resides at Sources/MyLibrary and shouldn’t be part of the package’s resource bundle. This code shows how you can exclude the file from the target by adding it to the list of excluded files:
+
+**Access a resource in code**
+
+When you build your Swift package, Xcode treats each target as a Swift module. If a target includes resources, Xcode creates a resource bundle and an internal static extension on Bundle to access it for each module. Use the extension to locate package resources. For example, use the following to retrieve the URL of a property list you bundle with your package:
+
+`let settingsURL = Bundle.module.url(forResource: "settings", withExtension: "plist")`
+
+Important
+**Always use Bundle.module when you access resources. A package shouldn’t make assumptions about the exact location of a resource.**
+
+If you want to make a package resource available to apps that depend on your Swift package, declare a public constant for it. For example, use the following to expose a property list file to apps that use your Swift package:
+`let settingsURL = Bundle.module.url(forResource: "settings", withExtension: "plist")`
