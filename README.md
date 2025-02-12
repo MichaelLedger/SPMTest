@@ -11,6 +11,61 @@ Use Xcode to open `Package.swift`.
 ## Search Scope
 Need switch search scope as `In Project/Workspace and Package Dependencies` to searching in all codes, including package codes.
 
+## [PromiseKit installation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/Installation.md)
+
+### Accio
+Add the following to your Package.swift:
+
+`.package(url: "https://github.com/mxcl/PromiseKit.git", .upToNextMajor(from: "6.8.4")),`
+
+Next, add `PromiseKit` to your App targets dependencies like so:
+```
+.target(
+    name: "App",
+    dependencies: [
+        "PromiseKit",
+    ]
+),
+```
+Then run `accio update`.
+
+### SwiftPM
+```
+package.dependencies.append(
+    .package(url: "https://github.com/mxcl/PromiseKit", from: "6.8.0")
+)
+```
+### Manually
+You can just drop `PromiseKit.xcodeproj` into your project and then add `PromiseKit.framework` to your app’s embedded frameworks.
+
+## [Accio](https://github.com/JamitLabs/Accio) - **Deprecated**
+A dependency manager driven by SwiftPM that works for iOS/tvOS/watchOS/macOS projects.
+With the release of Xcode 12 which includes Swift 5.3, we feel like there is no gap left to fill by Accio on the move to SwiftPM anymore, thus we are deprecating support for Accio in those versions, instead please use the built-in SwiftPM feature in Xcode.
+
+## [Tuist](https://docs.tuist.dev/en/)
+[Tuist](https://github.com/tuist/tuist) is a toolchain designed to accelerate and enhance app development. 
+
+### [Cache](https://docs.tuist.dev/en/guides/quick-start/optimize-workflows)
+
+If you clean build the project, which you usually do on CI or after cleaning the global cache in the hope of fixing cryptic compilation issues, you have to compile the whole project from scratch. When the project becomes large, this can take a long time.
+
+Tuist solves that by re-using binaries from previous builds. Run the following command:
+
+`tuist cache`
+The command will build and share all the cacheable targets in your project in a local and remote cache. After it completes, try generating the project:
+
+`tuist generate`
+You'll notice your project groups includes a new group Cache containing the binaries from the cache.
+
+An screenshot of a project group structure where you can see XCFrameworks in a cache group
+If you push your changes upstream to a remote repository, other developers can clone the project, and run the following commands:
+```
+tuist install
+tuist auth
+tuist generate
+```
+And they'll suddenly get a project with the dependencies as binaries.
+
 ## [Linking the package only in debug builds](https://augmentedcode.io/2022/05/02/linking-a-swift-package-only-in-debug-builds/)
 App target’s libraries.Then we’ll open build settings and look for “Excluded Source File Names” and configure release builds to ignore “[LookinServer*](https://github.com/QMUI/LookinServer)”.
 
