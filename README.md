@@ -1090,3 +1090,75 @@ Important
 
 If you want to make a package resource available to apps that depend on your Swift package, declare a public constant for it. For example, use the following to expose a property list file to apps that use your Swift package:
 `let settingsURL = Bundle.module.url(forResource: "settings", withExtension: "plist")`
+
+```
+// resource_bundle_accessor.swift (SPM auto generated)
+import class Foundation.Bundle
+import class Foundation.ProcessInfo
+import struct Foundation.URL
+
+private class BundleFinder {}
+
+extension Foundation.Bundle {
+    /// Returns the resource bundle associated with the current Swift module.
+    static let module: Bundle = {
+        let bundleName = "PRTAddressKit_PRTAddressKit"
+
+        let overrides: [URL]
+        #if DEBUG
+        // The 'PACKAGE_RESOURCE_BUNDLE_PATH' name is preferred since the expected value is a path. The
+        // check for 'PACKAGE_RESOURCE_BUNDLE_URL' will be removed when all clients have switched over.
+        // This removal is tracked by rdar://107766372.
+        if let override = ProcessInfo.processInfo.environment["PACKAGE_RESOURCE_BUNDLE_PATH"]
+                       ?? ProcessInfo.processInfo.environment["PACKAGE_RESOURCE_BUNDLE_URL"] {
+            overrides = [URL(fileURLWithPath: override)]
+        } else {
+            overrides = []
+        }
+        #else
+        overrides = []
+        #endif
+
+        let candidates = overrides + [
+            // Bundle should be present here when the package is linked into an App.
+            Bundle.main.resourceURL,
+
+            // Bundle should be present here when the package is linked into a framework.
+            Bundle(for: BundleFinder.self).resourceURL,
+
+            // For command-line tools.
+            Bundle.main.bundleURL,
+        ]
+
+        for candidate in candidates {
+            let bundlePath = candidate?.appendingPathComponent(bundleName + ".bundle")
+            if let bundle = bundlePath.flatMap(Bundle.init(url:)) {
+                return bundle
+            }
+        }
+        fatalError("unable to find bundle named PRTAddressKit_PRTAddressKit")
+    }()
+}
+```
+
+```
+// Alamofire/Tests/Bundle+AlamofireTests.swift
+import Foundation
+#if SWIFT_PACKAGE
+import class Foundation.Bundle
+#endif
+
+extension Bundle {
+    static var test: Bundle {
+        let bundle: Bundle
+        #if SWIFT_PACKAGE
+        bundle = Bundle.module
+        #else
+        bundle = Bundle(for: BaseTestCase.self)
+        #endif
+
+        return bundle
+    }
+}
+
+```
